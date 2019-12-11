@@ -11,5 +11,13 @@
   		<groupId>${project.groupId}</groupId>
   		<artifactId>zaudit-spring-boot-autoconfigure</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>zaudit</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework.boot</groupId>
+  		<artifactId>spring-boot-starter-aop</artifactId>
+  	</dependency>
   </dependencies>
 </project>
