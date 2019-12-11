@@ -28,13 +28,26 @@ public class AuditProperties {
 
 	public static final String ZAUDIT_PREFIX = "org.zl.log.audit";
 	
+	/**
+	 * these parameters is protect , they don't show real value
+	 */
 	private String[] protectParameters = {"password","loginpwd","newPwd","pwd"};
 	
+	/**
+	 * logger name
+	 */
 	private String loggerName = "zaudit";
 
+	/**
+	 * there attribute values will be print to the logger 
+	 */
 	private String[] sessionAttributes = {};
 	
+	/**
+	 * if this is set true and parameter type is web request,them print all parameter values to the logger of this web requst
+	 */
 	private boolean showRequestParameters;
+	
 	/**
 	 * @return the protectParameters
 	 */
