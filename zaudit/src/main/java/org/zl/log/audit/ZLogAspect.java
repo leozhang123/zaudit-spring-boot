@@ -34,6 +34,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -41,7 +43,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * logger on AOP
  * 
  * @author Leo
- * @version 0.1
+ * @version 0.2
  */
 @Aspect
 public class ZLogAspect {
@@ -58,6 +60,9 @@ public class ZLogAspect {
 	private Set<String> sessionAttributs;
 	
 	private boolean showRequestParameters;
+	
+	@Autowired
+	private MessageSource messages;
 	
 	public ZLogAspect(String loggerName, String[] protectParameters,String[] sessionAttributes,boolean showRequestParameters) {
 		this(loggerName,protectParameters);
@@ -108,7 +113,7 @@ public class ZLogAspect {
 		Object[] args = joinPoint.getArgs();
 		for (int i =0 ,len=parameterNames.length;i < len ;i++){
 			if(StringUtils.equalsAnyIgnoreCase( parameterNames[i],protectParameters)) {
-				log.info("{} parameter[{}] {} : {}",desc,i,parameterNames[i],"{PROTECTED}");
+				log.info(logMessage("zaudit.log.parameter"),desc,i,parameterNames[i],"{PROTECTED}");
 			}else {
 				if(showReqParams && args[i] instanceof HttpServletRequest ) {
 					HttpServletRequest request = (HttpServletRequest)args[i];
@@ -116,13 +121,13 @@ public class ZLogAspect {
 					final int num = i;
 					parameterMap.forEach((k,v) ->{
 						if(StringUtils.equalsAnyIgnoreCase( k,protectParameters)) {
-							log.info("{} parameter[{}] request[{}] : {}",desc,num,k,"{PROTECTED}");
+							log.info(logMessage("zaudit.log.request.parameter"),desc,num,k,"{PROTECTED}");
 						}else {
-							log.info("{} parameter[{}] request[{}] : {}",desc,num,k,v);
+							log.info(logMessage("zaudit.log.request.parameter"),desc,num,k,v);
 						}
 					});
 				}else {
-					log.info("{} parameter[{}] {} : {}",desc,i,parameterNames[i],args[i]);
+					log.info(logMessage("zaudit.log.parameter"),desc,i,parameterNames[i],args[i]);
 				}
 			}
         }
@@ -134,7 +139,7 @@ public class ZLogAspect {
 		Method method = sign.getMethod();
 		AuditLog annotation = method.getAnnotation(AuditLog.class);
 		String desc = StringUtils.defaultIfEmpty(annotation.desc(), annotation.value());
-		log.info("called service[{}]:{}",desc,ret);
+		log.info(logMessage("zaudit.log.success"),desc,ret);
 	}
 	
 	@AfterThrowing(value="logPointCut()", throwing = "ex")
@@ -143,6 +148,10 @@ public class ZLogAspect {
 		Method method = sign.getMethod();
 		AuditLog annotation = method.getAnnotation(AuditLog.class);
 		String desc = StringUtils.defaultIfEmpty(annotation.desc(), annotation.value());
-		log.info("called service[{}] failed: {}",desc,ex);
+		log.info(logMessage("zaudit.log.failed"),desc,ex);
+	}
+	
+	String logMessage(String code) {
+		return messages.getMessage(code, null,null);
 	}
 }
