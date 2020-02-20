@@ -90,7 +90,7 @@ public class ZLogAspect {
 		boolean showReqParams = showRequestParameters?true:annotation.requestParameters();
 		if( RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
 			HttpServletRequest  req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-			log.info("call service[{}] ip:{}",desc,req.getRemoteAddr());
+			log.info(logMessage("zaudit.log.request.ip"),desc,req.getRemoteAddr());
 			Set<String> names = this.sessionAttributs;
 			boolean showSession = this.showSession;
 			if(annotation.sessionName()!=null && annotation.sessionName().length>0){
@@ -103,11 +103,11 @@ public class ZLogAspect {
 				HttpSession session = req.getSession();
 				for (String name : names) {
 					Object value = session.getAttribute(name);
-					log.info("{} session [{}] : {}",desc,name,value);
+					log.info(logMessage("zaudit.log.session.attribute"),desc,name,value);
 				}
 			}
 		}else {
-			log.info("call service[{}] no web",desc);
+			log.info(logMessage("zaudit.log.noweb"),desc);
 		}
 		String[] parameterNames = sign.getParameterNames();
 		Object[] args = joinPoint.getArgs();
