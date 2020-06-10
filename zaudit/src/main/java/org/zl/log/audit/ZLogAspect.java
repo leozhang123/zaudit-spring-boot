@@ -17,7 +17,9 @@ package org.zl.log.audit;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,8 +36,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import org.springframework.lang.NonNull;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -61,19 +62,20 @@ public class ZLogAspect {
 	
 	private boolean showRequestParameters;
 	
-	@Autowired
-	private MessageSource messages;
+	ResourceBundle messages ;
 	
-	public ZLogAspect(String loggerName, String[] protectParameters,String[] sessionAttributes,boolean showRequestParameters) {
-		this(loggerName,protectParameters);
+	public ZLogAspect(String loggerName, String[] protectParameters,@NonNull String[] sessionAttributes,boolean showRequestParameters) {
+		this.log = LoggerFactory.getLogger(loggerName);
+		this.protectParameters = protectParameters;
 		this.sessionAttributs = new TreeSet<>(Arrays.asList(sessionAttributes));
 		this.showRequestParameters = showRequestParameters;
 		this.showSession = !sessionAttributs.isEmpty();
+		
+		messages = ResourceBundle.getBundle(this.getClass().getPackage().getName()+".messages", Locale.getDefault());
 	}
 	
 	public ZLogAspect(String loggerName, String[] protectParameters) {
-		this.log = LoggerFactory.getLogger(loggerName);
-		this.protectParameters = protectParameters;
+		this(loggerName,protectParameters,new String[]{},false);
 	}
 
 	@Pointcut("@annotation(org.zl.log.audit.AuditLog)")
@@ -148,10 +150,10 @@ public class ZLogAspect {
 		Method method = sign.getMethod();
 		AuditLog annotation = method.getAnnotation(AuditLog.class);
 		String desc = StringUtils.defaultIfEmpty(annotation.desc(), annotation.value());
-		log.info(logMessage("zaudit.log.failed"),desc,ex);
+		log.error(logMessage("zaudit.log.failed"),desc,ex);
 	}
 	
 	String logMessage(String code) {
-		return messages.getMessage(code, null,null);
+		return messages.getString(code);
 	}
 }
