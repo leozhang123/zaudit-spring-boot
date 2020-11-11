@@ -61,4 +61,11 @@ public @interface AuditLog {
 	 * @return
 	 */
 	String[] sessionName() default "";
+	
+	/**
+	 * Logging results.
+	 * if error ,them always to logging
+	 * @return
+	 */
+	boolean logResults() default true;
 }

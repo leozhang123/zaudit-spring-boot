@@ -140,6 +140,9 @@ public class ZLogAspect {
 		MethodSignature sign = (MethodSignature) joinPoint.getSignature();
 		Method method = sign.getMethod();
 		AuditLog annotation = method.getAnnotation(AuditLog.class);
+		if(!annotation.logResults()) {
+			return;
+		}
 		String desc = StringUtils.defaultIfEmpty(annotation.desc(), annotation.value());
 		log.info(logMessage("zaudit.log.success"),desc,ret);
 	}

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.leozhang123</groupId>
 		<artifactId>zaudit-spring-boot</artifactId>
-		<version>0.2</version>
+		<version>0.2.1‐SNAPSHOT</version>
 	</parent>
 	<artifactId>zaudit</artifactId>
 	<dependencies>
